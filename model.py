@@ -7,6 +7,7 @@ class DecisionTree:
         self.tree = None  # 初始化树结构为无
 
     # 特征分类树的构造函数, x 是特征矩阵，y 是代入向量
+    # 叶节点包含 "class" 标签，node 不包含
     def fit(self, x, y, depth=0):
         if depth == self.max_depth or len(set(y)) == 1:
             most_frequent_class = max(set(y), key=y.count)
@@ -76,3 +77,16 @@ class DecisionTree:
         probability = class_counts / len(y)
         entropy = -np.sum(probability * np.log2(probability))
         return entropy
+
+    def predict(self, x):
+        return np.array([self._predict_tree(x1, self.tree) for x1 in x])
+
+    def _predict_tree(self, x, node):
+        if "class" in node:
+            # 叶子节点直接返回
+            return node["class"]
+
+        if x[node["feature_index"]] <= node["threshold"]:
+            return self._predict_tree(x, node["left"])
+        else:
+            return self._predict_tree(x, node["right"])
