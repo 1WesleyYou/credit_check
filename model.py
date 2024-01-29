@@ -1,5 +1,5 @@
 import numpy as np
-from preload import feat_matrix
+from preload import feat_matrix, label_vec, TIME, AMOUNT
 
 
 class DecisionTree:
