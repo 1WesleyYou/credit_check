@@ -91,3 +91,35 @@ class DecisionTree:
             return self._predict_tree(x, node["left"])
         else:
             return self._predict_tree(x, node["right"])
+
+
+class RandomForest:
+    def __init__(self, num_trees, max_depth):
+        self.num_trees = num_trees
+        self.max_depth = max_depth
+        self.trees = []
+
+    def fit(self, x, y):
+        for _ in range(self.num_trees):
+            # 随机选择一部分数据用于训练每棵树
+            sample_indices = np.random.choice(len(x), len(x), replace=True)
+            x_sampled = x[sample_indices]
+            y_sampled = y[sample_indices]
+
+            tree = DecisionTree(max_depth=self.max_depth)
+            tree.fit(x_sampled, y_sampled)
+            self.trees.append(tree)
+
+    def predict(self, y):
+        predictions = np.zeros((len(y), self.num_trees))
+
+        for i, tree in enumerate(self.trees):
+            # 树的输出应该是多个组成了向量
+            predictions[:, i] = tree.predict(y)
+
+        # 多数投票决定最终结果
+        final_predictions = np.apply_along_axis(lambda x1: np.bincount(x1).argmax(), axis=1, arr=predictions)
+
+        return final_predictions
+
+# todo: 解释 y 的定义
