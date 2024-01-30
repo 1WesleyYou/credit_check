@@ -1,5 +1,6 @@
 import numpy as np
-from preload import feat_matrix, label_vec, TIME, AMOUNT
+from preload import train_feat_matrix, test_feat_matrix, train_label_vec, test_label_vec, TIME, AMOUNT
+from tqdm import tqdm
 
 
 class DecisionTree:
@@ -43,7 +44,7 @@ class DecisionTree:
     # 找到每个节点的最好切割点，也就是通过特征矩阵和实际向量获得最佳的分类阈值和特征
     # 用 _ 开头表示这个函数是 private 的, 这是写码习惯
     def _find_best_split(self, x, y):
-        num_feature = x.shape(1)
+        num_feature = x.shape[1]
         # 这里用信息增益算法判断最好切割点
         best_info_gain = -1
         best_feat = None
@@ -54,7 +55,12 @@ class DecisionTree:
         for feature_index in range(num_feature):
             # 去除重复操作，输出按照升序排序
             unique_values = np.unique(x[:, feature_index])
+            sub_progress_size = unique_values.size
+            sub_progress = tqdm(total=sub_progress_size,
+                                desc=f"Calculating [{feature_index + 1}/{num_feature}] best split",
+                                ncols=110)  # 我小小的 13寸笔记本这个是最大的了
             for value in unique_values:
+                sub_progress.update(1)
                 left_indices = x[:, feature_index] <= value
                 right_indices = ~left_indices
 
@@ -66,7 +72,6 @@ class DecisionTree:
                         np.sum(left_indices) / len(y) * left_entropy +
                         np.sum(right_indices) / len(y) * right_entropy
                 )
-
                 if info_gain > best_info_gain:
                     best_info_gain = info_gain
                     best_feat = feature_index
@@ -122,4 +127,6 @@ class RandomForest:
 
         return final_predictions
 
+
 # todo: 解释 y 的定义
+forest = RandomForest(num_trees=10, max_depth=5)

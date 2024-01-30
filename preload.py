@@ -12,5 +12,7 @@ feat_matrix = data[:, :30]
 label_vec = data[:, 30]
 
 # print(feat_matrix[:, AMOUNT])
-train_feat_matrix, test_feat_matrix, train_label_vec, test_label_vec = train_test_split(feat_matrix, label_vec,
-                                                                                        test_size=0.2, random_state=42)
+train_feat_matrix, test_feat_matrix, train_label_vec, test_label_vec \
+    = train_test_split(feat_matrix, label_vec, test_size=0.2, random_state=42)  # 随机数种子
+
+# print(test_label_vec.flatten())
